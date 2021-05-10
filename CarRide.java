@@ -7,13 +7,11 @@ public class CarRide {
     private int carCapacity, numCars, nextCar, nextRequestLoad, nextUnload;
     private int[] passengers;
 
-    private ReentrantLock rollerCoasterLock;
-	private Condition carLoad; //car load passenger
-	private Condition carUnload; //car is unloading
-	private Condition carIsFull; //car is full
-	private Condition nextCarCanLoad; //load next passenger
-    
-
+    private ReentrantLock carRideLock;
+	private Condition load; //car load passenger
+	private Condition unload; //car is unloading
+	private Condition fullCar; //car is full
+	private Condition loadNextPass; //load next passenger
 
     private boolean full = true;
 
@@ -23,20 +21,20 @@ public class CarRide {
 		this.numCars = m;
 		this.passengers = new int[m];
 
-        rollerCoasterLock = new ReentrantLock();
-		carLoad = rollerCoasterLock.newCondition();
-		carUnload = rollerCoasterLock.newCondition();
-		carIsFull = rollerCoasterLock.newCondition();
-		nextCarCanLoad = rollerCoasterLock.newCondition();
+        carRideLock = new ReentrantLock();
+		load = carRideLock.newCondition();
+		unload = carRideLock.newCondition();
+		fullCar = carRideLock.newCondition();
+		loadNextPass = carRideLock.newCondition();
 
     }
 
     public void ride(int id){
-        rollerCoasterLock.lock();
+        carRideLock.lock();
 
         while (passengers[nextCar] == carCapacity) {
 			System.out.println("Passenger " + id + ": Waiting to load");
-			carLoad.awaitUninterruptibly();
+			load.awaitUninterruptibly();
 		}
 		
 		final int ridingCar = nextCar;
@@ -45,22 +43,21 @@ public class CarRide {
 		System.out.println("Passenger " + id + ": Ride the car " + ridingCar);
 		
         if (passengers[ridingCar] == carCapacity) {
-			carIsFull.signal();
+			fullCar.signal();
 		}
 
-		
         //waits until the car gets full
-		carIsFull.awaitUninterruptibly();
+		fullCar.awaitUninterruptibly();
 		
         //waits the end of the ride
-		carUnload.awaitUninterruptibly();
+		unload.awaitUninterruptibly();
 		System.out.println("Passenger " + id + ": Left the car " + ridingCar);
 		
-		rollerCoasterLock.unlock();
+		carRideLock.unlock();
     }
 
     public void load(){
-        rollerCoasterLock.lock();
+        carRideLock.lock();
 		
 		final int thisCar = nextRequestLoad;
 
@@ -69,44 +66,44 @@ public class CarRide {
 
 		//waiting car:
 		if (thisCar != nextCar) {
-			nextCarCanLoad.awaitUninterruptibly();
+			loadNextPass.awaitUninterruptibly();
 		}
 
 		full = false;
 
 		//car is ready to load 
-		carLoad.signalAll();
+		load.signalAll();
 		System.out.println("Car " + thisCar + " is waiting for passengers \n");
 		
         //waits until the car gets full
-		carIsFull.awaitUninterruptibly();
+		fullCar.awaitUninterruptibly();
 		
 		full = true;
 		
         //car full
-		carIsFull.signalAll();
+		fullCar.signalAll();
         System.out.println("All aboard car " + thisCar + "\n");
 		nextCar = (nextCar + 1) % numCars;
 		
         //next car
-		nextCarCanLoad.signal();
+		loadNextPass.signal();
 		
-		rollerCoasterLock.unlock();
+		carRideLock.unlock();
     }
 
 
     public void unload(){
-        rollerCoasterLock.lock();
+        carRideLock.lock();
 		
 		//Unload the passengers:
 		for (int i = 0; i < carCapacity; i++) {
-			carUnload.signal();
+			unload.signal();
 		}
 		passengers[nextUnload] = 0;
 		System.out.println("All ashore car " + nextUnload + "\n");
 		nextUnload = (nextUnload + 1) % numCars;
 		
-		rollerCoasterLock.unlock();
+		carRideLock.unlock();
     }
 
 }

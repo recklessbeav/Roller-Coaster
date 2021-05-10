@@ -28,7 +28,7 @@ public class Main {
         CarRide cars = new CarRide(C,m);
             
         for (int i = 0; i < m; i++) {
-            Thread carThread = new Thread(new Runnable() {
+            Thread car = new Thread(new Runnable() {
             @Override
                 public void run() {
                     while (true) {
@@ -44,7 +44,7 @@ public class Main {
                 }
             }, "Car " + i);
             
-            carThread.start();
+            car.start();
         }
 
 
@@ -52,7 +52,7 @@ public class Main {
             
             int id = i;
             
-            Thread passengerThread = new Thread(new Runnable() {
+            Thread passenger = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
@@ -60,7 +60,7 @@ public class Main {
                     }
                 }
             }, "Passenger " + id);
-            passengerThread.start();
+            passenger.start();
         }
 
 
