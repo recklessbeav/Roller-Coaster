@@ -33,14 +33,14 @@ public class CarRide {
         carRideLock.lock();
 
         while (passengers[nextCar] == carCapacity) {
-			System.out.println("Passenger " + id + ": Waiting to load");
+			System.out.println("Passenger " + id + " is wandering");
 			load.awaitUninterruptibly();
 		}
 		
 		final int ridingCar = nextCar;
 		
         passengers[ridingCar]++;
-		System.out.println("Passenger " + id + ": Ride the car " + ridingCar);
+		System.out.println("Passenger " + id + " rides car " + ridingCar);
 		
         if (passengers[ridingCar] == carCapacity) {
 			fullCar.signal();
@@ -51,7 +51,7 @@ public class CarRide {
 		
         //waits the end of the ride
 		unload.awaitUninterruptibly();
-		System.out.println("Passenger " + id + ": Left the car " + ridingCar);
+		System.out.println("Passenger " + id + " left car " + ridingCar);
 		
 		carRideLock.unlock();
     }
