@@ -1,11 +1,10 @@
-import java.util.Random;
-import java.util.*;
+
 import java.util.concurrent.locks.*;
+import java.util.*;
 import java.lang.*;
 
-
 public class Main {
-    public static void main(String[] args)  {  
+    public static void main(String args[])  {  
         Scanner sc = new Scanner(System.in);    
         
         System.out.print("Enter the number of processes: ");  
@@ -19,7 +18,7 @@ public class Main {
         Random rand = new Random();
 	    int wanderLength = rand.nextInt(50) + 1;;	        
 
-        CarRide cars = new CarRide(C, m);
+        CarRide cars = new CarRide(C,m);
             
         for (int i = 0; i < m; i++) {
             Thread carThread = new Thread(new Runnable() {
