@@ -1,3 +1,10 @@
+/**
+ * https://www.cs.mcgill.ca/~ylin30//courses/cs623/RollerCoaster/RollerCoaster.java
+ * https://gist.github.com/sairamch04/25b86057159253755d4f
+ * https://pages.mtu.edu/~shene/NSF-3/e-Book/SEMA/TM-example-roller.html
+ * 
+ */
+
 
 import java.util.concurrent.locks.*;
 import java.util.*;
